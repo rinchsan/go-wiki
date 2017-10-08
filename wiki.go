@@ -45,7 +45,11 @@ func getAllPages() ([]*Page, error) {
 	var pages []*Page
 	for _, fileInfo := range fileInfos {
 		title := fileInfo.Name()
-		title = title[:len(title)-4]
+		rep, err := regexp.Compile(".txt$")
+		if err != nil {
+			continue
+		}
+		title = rep.ReplaceAllString(title, "")
 		page, err := loadPage(title)
 		if err != nil {
 			return nil, err
