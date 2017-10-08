@@ -27,8 +27,8 @@ func loadPage(title string) (*Page, error) {
 }
 
 var templates = template.Must(template.ParseFiles(
-	"edit.html",
-	"view.html"))
+	"tmpl/edit.html",
+	"tmpl/view.html"))
 
 func renderTemplate(w http.ResponseWriter, tmpl string, p *Page) {
 	err := templates.ExecuteTemplate(w, tmpl + ".html", p)
