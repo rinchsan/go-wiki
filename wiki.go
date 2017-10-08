@@ -37,6 +37,14 @@ func renderTemplate(w http.ResponseWriter, tmpl string, p *Page) {
 	}
 }
 
+func rootPageHandler(w http.ResponseWriter, r *http.Request) {
+	t, err := template.ParseFiles("tmpl/root.html")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+	t.Execute(w, nil)
+}
+
 func viewHandler(w http.ResponseWriter, r *http.Request, title string) {
 	p, err := loadPage(title)
 	if err != nil {
@@ -79,6 +87,7 @@ func makeHandler(fn func (http.ResponseWriter, *http.Request, string)) http.Hand
 }
 
 func main() {
+	http.HandleFunc("/", rootPageHandler)
 	http.HandleFunc("/view/", makeHandler(viewHandler))
 	http.HandleFunc("/edit/", makeHandler(editHandler))
 	http.HandleFunc("/save/", makeHandler(saveHandler))
