@@ -63,7 +63,7 @@ func editHandler(w http.ResponseWriter, r *http.Request, title string) {
 }
 
 func saveHandler(w http.ResponseWriter, r *http.Request, title string) {
-	if r.Method != "POST" {
+	if r.Method != http.MethodPost {
 		http.NotFound(w, r)
 		return
 	}
@@ -90,10 +90,25 @@ func makeHandler(fn func (http.ResponseWriter, *http.Request, string)) http.Hand
 	}
 }
 
+func newPageHandler(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case http.MethodGet:
+		t, err := template.ParseFiles("tmpl/new.html")
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
+		t.Execute(w, nil)
+	case http.MethodPost:
+		title := r.FormValue("title")
+		http.Redirect(w, r, "/view/" + title, http.StatusFound)
+	}
+}
+
 func main() {
 	http.HandleFunc("/", rootPageHandler)
 	http.HandleFunc("/view/", makeHandler(viewHandler))
 	http.HandleFunc("/edit/", makeHandler(editHandler))
 	http.HandleFunc("/save/", makeHandler(saveHandler))
+	http.HandleFunc("/new", newPageHandler)
 	http.ListenAndServe(":8080", nil)
 }
