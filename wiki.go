@@ -37,12 +37,39 @@ func renderTemplate(w http.ResponseWriter, tmpl string, p *Page) {
 	}
 }
 
+func getAllPages() ([]*Page, error) {
+	fileInfos, err := ioutil.ReadDir("data")
+	if err != nil {
+		return nil, err
+	}
+	var pages []*Page
+	for _, fileInfo := range fileInfos {
+		title := fileInfo.Name()
+		title = title[:len(title)-4]
+		page, err := loadPage(title)
+		if err != nil {
+			return nil, err
+		}
+		pages = append(pages, page)
+	}
+	return pages, nil
+}
+
 func rootPageHandler(w http.ResponseWriter, r *http.Request) {
 	t, err := template.ParseFiles("tmpl/root.html")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
-	t.Execute(w, nil)
+	pages, err := getAllPages()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	err = t.Execute(w, pages)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 }
 
 func viewHandler(w http.ResponseWriter, r *http.Request, title string) {
