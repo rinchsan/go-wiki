@@ -14,7 +14,7 @@ type Page struct {
 
 func (p *Page) save() error {
 	filename := p.Title + ".txt"
-	return ioutil.WriteFile("data/" + filename, p.Body, 0600)
+	return ioutil.WriteFile("data/"+filename, p.Body, 0600)
 }
 
 func loadPage(title string) (*Page, error) {
@@ -31,7 +31,7 @@ var templates = template.Must(template.ParseFiles(
 	"tmpl/view.html"))
 
 func renderTemplate(w http.ResponseWriter, tmpl string, p *Page) {
-	err := templates.ExecuteTemplate(w, tmpl + ".html", p)
+	err := templates.ExecuteTemplate(w, tmpl+".html", p)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
@@ -48,7 +48,7 @@ func rootPageHandler(w http.ResponseWriter, r *http.Request) {
 func viewHandler(w http.ResponseWriter, r *http.Request, title string) {
 	p, err := loadPage(title)
 	if err != nil {
-		http.Redirect(w, r, "/edit/" + title, http.StatusFound)
+		http.Redirect(w, r, "/edit/"+title, http.StatusFound)
 		return
 	}
 	renderTemplate(w, "view", p)
@@ -74,12 +74,12 @@ func saveHandler(w http.ResponseWriter, r *http.Request, title string) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	http.Redirect(w, r, "/view/" + title, http.StatusFound)
+	http.Redirect(w, r, "/view/"+title, http.StatusFound)
 }
 
 var validPath = regexp.MustCompile("^/(edit|save|view)/([a-zA-Z0-9]+)$")
 
-func makeHandler(fn func (http.ResponseWriter, *http.Request, string)) http.HandlerFunc {
+func makeHandler(fn func(http.ResponseWriter, *http.Request, string)) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		m := validPath.FindStringSubmatch(r.URL.Path)
 		if m == nil {
@@ -100,7 +100,7 @@ func newPageHandler(w http.ResponseWriter, r *http.Request) {
 		t.Execute(w, nil)
 	case http.MethodPost:
 		title := r.FormValue("title")
-		http.Redirect(w, r, "/view/" + title, http.StatusFound)
+		http.Redirect(w, r, "/view/"+title, http.StatusFound)
 	}
 }
 
