@@ -1,7 +1,8 @@
 # go-wiki
 
-Wiki Service implemented with Go
-See also https://golang.org/doc/articles/wiki/
+Wiki Service implemented with Go.
+
+See also https://golang.org/doc/articles/wiki/.
 
 ## How to run
 
